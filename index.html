@@ -105,6 +105,19 @@
   <!-- Interactive Canvas Particle Layer -->
   <canvas id="particleCanvas"></canvas>
 
+  <!-- HIDDEN AUTO-PLAY YOUTUBE IFRAME (muted, looping background music) -->
+  <iframe
+    id="bgMusicPlayer"
+    width="0"
+    height="0"
+    src="https://www.youtube.com/embed/LTphVIore3A?autoplay=1&mute=1&loop=1&playlist=LTphVIore3A&controls=0&modestbranding=1&rel=0&playsinline=1"
+    title="Background music"
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    referrerpolicy="strict-origin-when-cross-origin"
+    style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;border:0;z-index:-1;"
+  ></iframe>
+
   <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     
     <!-- TOP HEADER BAR -->
@@ -120,6 +133,11 @@
 
       <!-- Social & Live Sync Toolbar -->
       <div class="flex items-center gap-3">
+        <button id="unmuteMusicBtn" class="glass-btn px-4 py-2 rounded-full text-xs font-medium tracking-wide flex items-center gap-2 text-lavenderLight hover:text-white">
+          <i class="fa-solid fa-volume-high text-accentViolet text-sm"></i>
+          <span>Play Music</span>
+        </button>
+
         <button id="openSyncModalBtn" class="glass-btn px-4 py-2 rounded-full text-xs font-medium tracking-wide flex items-center gap-2 text-lavenderLight hover:text-white">
           <i class="fa-brands fa-instagram text-accentViolet text-sm"></i>
           <span>Sync / Edit Photos</span>
@@ -475,6 +493,13 @@
     const lightboxModal = document.getElementById('lightboxModal');
     const syncModal = document.getElementById('syncModal');
     const feedStatusText = document.getElementById('feedStatusText');
+
+    // Unmute background music button
+    document.getElementById('unmuteMusicBtn').addEventListener('click', () => {
+      const iframe = document.getElementById('bgMusicPlayer');
+      iframe.src = iframe.src.replace('mute=1', 'mute=0');
+      document.getElementById('unmuteMusicBtn').style.display = 'none';
+    });
 
     // Render Gallery Cards
     function renderGallery(photosToDisplay) {
