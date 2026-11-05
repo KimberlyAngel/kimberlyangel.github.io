@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kimberly Angel · Enter the Magic</title>
+  <!-- Google Fonts & FontAwesome (same aesthetic) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* ---------- GLOBAL RESET & THEME ---------- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #0a0810;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(140, 90, 240, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 65%, rgba(200, 150, 255, 0.1) 0%, transparent 45%),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.005) 0px, rgba(255, 255, 255, 0.005) 2px, transparent 2px, transparent 10px);
+      background-attachment: fixed;
+      font-family: 'Inter', sans-serif;
+      color: #ede7f6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ---------- CANVAS PARTICLE LAYER ---------- */
+    #loadingCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ---------- CENTER CARD ---------- */
+    .loading-card {
+      position: relative;
+      z-index: 10;
+      max-width: 680px;
+      width: 90%;
+      padding: 3rem 2rem 2.5rem;
+      background: rgba(23, 18, 35, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 3rem;
+      border: 1px solid rgba(182, 154, 255, 0.25);
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.85), 0 0 50px rgba(182, 154, 255, 0.15);
+      text-align: center;
+      animation: floatIn 1.2s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+      transform: translateY(20px);
+      opacity: 0;
+    }
+
+    @keyframes floatIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- TITLE ---------- */
+    .brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: white;
+      text-shadow: 0 0 30px rgba(182, 154, 255, 0.6), 0 0 60px rgba(182, 154, 255, 0.2);
+      line-height: 1.2;
+      margin-bottom: 0.25rem;
+    }
+
+    .brand-title .italic-accent {
+      font-style: italic;
+      font-weight: 300;
+      color: #b69aff;
+      text-shadow: 0 0 25px rgba(182, 154, 255, 0.7);
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #9e8fb9;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .subtitle i { color: #b69aff; font-size: 0.7rem; }
+
+    /* ---------- SPINNER ---------- */
+    .spinner-wrapper {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .spinner-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(182, 154, 255, 0.15);
+      border-top-color: #b69aff;
+      border-right-color: #b69aff;
+      animation: spin 2.4s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite;
+      box-shadow: 0 0 25px rgba(182, 154, 255, 0.3);
+    }
+
+    .spinner-ring:nth-child(2) {
+      inset: 12px;
+      border-width: 1.5px;
+      border-top-color: #d4bfff;
+      border-right-color: transparent;
+      border-bottom-color: #d4bfff;
+      animation: spinReverse 1.8s linear infinite;
+      opacity: 0.8;
+    }
+
+    .spinner-ring:nth-child(3) {
+      inset: 24px;
+      border-width: 1px;
+      border-top-color: transparent;
+      border-left-color: #ede7f6;
+      border-bottom-color: transparent;
+      animation: spin 3.2s linear infinite;
+      opacity: 0.5;
+    }
+
+    .spinner-core {
+      position: absolute;
+      inset: 38px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff6, #b69aff33);
+      box-shadow: 0 0 30px #b69aff88;
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes spinReverse { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.6; transform: scale(0.95); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    /* ---------- PROGRESS ---------- */
+    .loading-status {
+      font-size: 0.85rem;
+      color: #cbb9e9;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 300;
+    }
+
+    .loading-status i {
+      color: #b69aff;
+      animation: softBlink 1.5s infinite alternate;
+    }
+
+    @keyframes softBlink {
+      from { opacity: 0.5; }
+      to { opacity: 1; }
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(35, 27, 54, 0.8);
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 0.5rem 0 1.8rem;
+      border: 1px solid rgba(182, 154, 255, 0.1);
+      box-shadow: inset 0 0 10px #00000055;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #8c5af0, #b69aff, #d4bfff);
+      border-radius: 99px;
+      box-shadow: 0 0 18px #b69affcc;
+      transition: width 0.3s cubic-bezier(0.2, 0.8, 0.4, 1);
+    }
+
+    /* ---------- QUOTE ---------- */
+    .magic-quote {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: #9e8fb9;
+      max-width: 380px;
+      margin: 0 auto 2rem;
+      line-height: 1.5;
+      font-weight: 300;
+      border-top: 1px solid rgba(182, 154, 255, 0.15);
+      border-bottom: 1px solid rgba(182, 154, 255, 0.15);
+      padding: 1rem 0;
+      letter-spacing: 0.02em;
+    }
+
+    .magic-quote i { color: #b69aff; font-size: 0.8rem; margin: 0 4px; }
+
+    /* ---------- ENTER BUTTON (prominent, magical) ---------- */
+    .enter-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 1.1rem 3rem;
+      border-radius: 80px;
+      background: linear-gradient(135deg, rgba(140, 90, 240, 0.3), rgba(182, 154, 255, 0.15));
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(182, 154, 255, 0.5);
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 40px rgba(182, 154, 255, 0.3), 0 10px 30px -10px #000000;
+      margin-top: 0.5rem;
+      position: relative;
+      overflow: hidden;
+      animation: buttonGlow 2.5s ease-in-out infinite alternate;
+    }
+
+    .enter-button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.6s;
+      pointer-events: none;
+    }
+
+    .enter-button:hover::before {
+      opacity: 1;
+    }
+
+    .enter-button i {
+      color: #d4bfff;
+      font-size: 1.2rem;
+      transition: transform 0.3s;
+    }
+
+    .enter-button:hover {
+      background: linear-gradient(135deg, rgba(182, 154, 255, 0.45), rgba(212, 191, 255, 0.25));
+      border-color: #d4bfff;
+      box-shadow: 0 0 70px rgba(182, 154, 255, 0.6), 0 10px 30px -8px #000000;
+      color: white;
+      transform: scale(1.03);
+    }
+
+    .enter-button:hover i {
+      transform: translateX(6px) scale(1.1);
+    }
+
+    @keyframes buttonGlow {
+      0% { box-shadow: 0 0 40px rgba(182, 154, 255, 0.3), 0 10px 30px -10px #000000; }
+      100% { box-shadow: 0 0 70px rgba(182, 154, 255, 0.55), 0 10px 30px -10px #000000; }
+    }
+
+    /* ---------- FLOATING ORBS ---------- */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #b69aff66, transparent 70%);
+      filter: blur(40px);
+      z-index: 1;
+      pointer-events: none;
+      animation: orbFloat 18s infinite alternate ease-in-out;
+    }
+
+    .orb-1 {
+      width: 350px; height: 350px;
+      top: -80px; left: -80px;
+      background: radial-gradient(circle at 30% 30%, #8c5af055, transparent 70%);
+      animation-duration: 22s;
+    }
+
+    .orb-2 {
+      width: 500px; height: 500px;
+      bottom: -150px; right: -100px;
+      background: radial-gradient(circle at 60% 40%, #c896ff44, transparent 70%);
+      animation-duration: 28s;
+      animation-delay: -5s;
+    }
+
+    @keyframes orbFloat {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, -30px) scale(1.1); }
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width: 480px) {
+      .loading-card { padding: 2rem 1.5rem 2rem; border-radius: 2rem; }
+      .brand-title { font-size: 2.2rem; }
+      .spinner-wrapper { width: 100px; height: 100px; }
+      .spinner-core { inset: 32px; }
+      .enter-button { font-size: 0.85rem; padding: 0.9rem 2rem; letter-spacing: 0.15em; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ambient orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- particle canvas -->
+  <canvas id="loadingCanvas"></canvas>
+
+  <!-- main loading card -->
+  <div class="loading-card">
+    <div class="brand-title">
+      Kimberly <span class="italic-accent">Angel</span>
+    </div>
+    <div class="subtitle">
+      <i class="fa-solid fa-sparkles"></i> visual storyteller <i class="fa-solid fa-sparkles"></i>
+    </div>
+
+    <!-- spinner -->
+    <div class="spinner-wrapper">
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring"></div>
+      <div class="spinner-core"></div>
+    </div>
+
+    <!-- progress & text -->
+    <div class="loading-status">
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      <span id="statusText">gathering stardust...</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- magical quote -->
+    <div class="magic-quote">
+      <i class="fa-solid fa-quote-left"></i>
+      the magic is in the waiting, too
+      <i class="fa-solid fa-quote-right"></i>
+    </div>
+
+    <!-- ** CLICK HERE TO ENTER THE SITE ** -->
+    <a href="https://kimberlyangel.github.io/home.html" class="enter-button" id="enterBtn">
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      click here to enter the site
+      <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- CONFIG ----------
+      const REDIRECT_URL = 'https://kimberlyangel.github.io/home.html';
+      const LOAD_DURATION = 2800; // progress bar animation duration (2.8s)
+
+      // ---------- DOM ELEMENTS ----------
+      const progressFill = document.getElementById('progressFill');
+      const statusText = document.getElementById('statusText');
+      const enterBtn = document.getElementById('enterBtn');
+
+      // ---------- STATUS MESSAGES ----------
+      const messages = [
+        'gathering stardust...',
+        'developing quiet light...',
+        'arranging ethereal frames...',
+        'almost there, magic...',
+        'the gallery awaits...'
+      ];
+
+      // ---------- PROGRESS ANIMATION (visual only, no redirect) ----------
+      let startTime = null;
+      let animationFrame = null;
+
+      function animateProgress(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / LOAD_DURATION, 1);
+
+        progressFill.style.width = (progress * 100) + '%';
+
+        const msgIndex = Math.min(Math.floor(progress * messages.length), messages.length - 1);
+        statusText.textContent = messages[msgIndex];
+
+        if (progress < 1) {
+          animationFrame = requestAnimationFrame(animateProgress);
+        } else {
+          if (animationFrame) cancelAnimationFrame(animationFrame);
+          statusText.textContent = 'ready — click below to enter';
+          // button already says "click here to enter the site"
+        }
+      }
+
+      // start the progress after a tiny delay
+      setTimeout(() => {
+        animationFrame = requestAnimationFrame(animateProgress);
+      }, 400);
+
+      // ---------- PARTICLE CANVAS (soft sparkles + dots) ----------
+      const canvas = document.getElementById('loadingCanvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+
+      function resizeCanvas() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      // Particle class
+      class Particle {
+        constructor() { this.reset(); }
+        reset() {
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          this.size = Math.random() * 2.2 + 0.6;
+          this.speedX = (Math.random() - 0.5) * 0.25;
+          this.speedY = (Math.random() - 0.5) * 0.25 - 0.05;
+          this.opacity = Math.random() * 0.5 + 0.1;
+          this.hue = Math.random() > 0.7 ? 270 : 260;
+        }
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) this.reset();
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${this.hue}, 70%, 80%, ${this.opacity})`;
+          ctx.fill();
+        }
+      }
+
+      // Sparkle class
+      class Sparkle {
+        constructor() { this.reset(); }
+        reset() {
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          this.size = Math.random() * 8 + 3;
+          this.maxOpacity = Math.random() * 0.4 + 0.15;
+          this.opacity = 0;
+          this.fadeIn = true;
+          this.fadeSpeed = Math.random() * 0.01 + 0.005;
+          this.rotation = Math.random() * Math.PI;
+          this.color = Math.random() > 0.3 ? 'rgba(210, 190, 255,' : 'rgba(245, 240, 255,';
+        }
+        update() {
+          if (this.fadeIn) {
+            this.opacity += this.fadeSpeed;
+            if (this.opacity >= this.maxOpacity) this.fadeIn = false;
+          } else {
+            this.opacity -= this.fadeSpeed;
+            if (this.opacity <= 0) this.reset();
+          }
+        }
+        draw() {
+          if (this.opacity <= 0) return;
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.rotate(this.rotation);
+
+          const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size * 0.9);
+          grad.addColorStop(0, `${this.color} ${this.opacity})`);
+          grad.addColorStop(1, `${this.color} 0)`);
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(0, 0, this.size * 0.9, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = `${this.color} ${this.opacity * 0.9})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(-this.size, 0);
+          ctx.lineTo(this.size, 0);
+          ctx.moveTo(0, -this.size);
+          ctx.lineTo(0, this.size);
+          ctx.stroke();
+
+          ctx.restore();
+        }
+      }
+
+      const particles = [];
+      const sparkles = [];
+      for (let i = 0; i < 55; i++) particles.push(new Particle());
+      for (let i = 0; i < 22; i++) sparkles.push(new Sparkle());
+
+      function animateParticles() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        sparkles.forEach(s => { s.update(); s.draw(); });
+        requestAnimationFrame(animateParticles);
+      }
+
+      animateParticles();
+
+      // optional: button click just navigates (href is set)
+      // nothing else needed, but we can add a small feedback if desired
+      enterBtn.addEventListener('click', function(e) {
+        // no need to prevent default — the href works.
+        // just a little visual feedback (optional)
+        statusText.textContent = 'entering the gallery...';
+      });
+    })();
+  </script>
+</body>
+</html>
