@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kimberly Angel · Magic in the Everyday (@kimberlyangelx)</title>
+  
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandDark: '#0a0810',
+            cardBg: 'rgba(23, 18, 35, 0.75)',
+            accentViolet: '#b69aff',
+            accentGlow: 'rgba(182, 154, 255, 0.35)',
+            lavenderLight: '#ede7f6',
+            lavenderMuted: '#9e8fb9'
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['"Inter"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar & Smooth Theme Aesthetics */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0810;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2a203e;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4a386c;
+    }
+
+    body {
+      background-color: #0a0810;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(140, 90, 240, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 65%, rgba(200, 150, 255, 0.1) 0%, transparent 45%),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.005) 0px, rgba(255, 255, 255, 0.005) 2px, transparent 2px, transparent 10px);
+      background-attachment: fixed;
+      font-family: 'Inter', sans-serif;
+      color: #ede7f6;
+    }
+
+    .glow-title {
+      text-shadow: 0 0 25px rgba(182, 154, 255, 0.5), 0 0 50px rgba(182, 154, 255, 0.2);
+    }
+    .glow-box {
+      box-shadow: 0 8px 32px 0 rgba(19, 13, 33, 0.6), 0 0 20px 0 rgba(182, 154, 255, 0.12);
+    }
+    .glow-box:hover {
+      box-shadow: 0 16px 48px 0 rgba(19, 13, 33, 0.9), 0 0 30px 2px rgba(182, 154, 255, 0.3);
+    }
+
+    .glass-panel {
+      background: rgba(23, 18, 35, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(182, 154, 255, 0.15);
+    }
+    .glass-btn {
+      background: rgba(35, 27, 54, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(182, 154, 255, 0.25);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-btn:hover {
+      background: rgba(182, 154, 255, 0.2);
+      border-color: rgba(182, 154, 255, 0.5);
+      box-shadow: 0 0 15px rgba(182, 154, 255, 0.3);
+    }
+
+    #particleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden">
+
+  <!-- Interactive Canvas Particle Layer -->
+  <canvas id="particleCanvas"></canvas>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- TOP HEADER BAR -->
+    <header class="flex flex-col md:flex-row justify-between items-center py-6 border-b border-purple-900/30 mb-8 gap-4">
+      <div class="text-center md:text-left">
+        <h1 class="font-serif text-3xl sm:text-4xl tracking-wider text-white font-normal glow-title">
+          Kimberly <span class="italic font-light text-accentViolet">Angel</span>
+        </h1>
+        <p class="text-xs tracking-widest text-lavenderMuted uppercase mt-1">
+          <i class="fa-solid fa-sparkles text-accentViolet mr-1"></i> Visual Storyteller &amp; Fine Art Photography
+        </p>
+      </div>
+
+      <!-- Social & Live Sync Toolbar -->
+      <div class="flex items-center gap-3">
+        <button id="openSyncModalBtn" class="glass-btn px-4 py-2 rounded-full text-xs font-medium tracking-wide flex items-center gap-2 text-lavenderLight hover:text-white">
+          <i class="fa-brands fa-instagram text-accentViolet text-sm"></i>
+          <span>Sync / Edit Photos</span>
+        </button>
+
+        <a href="https://www.instagram.com/kimberlyangelx" target="_blank" rel="noopener" 
+           class="glass-btn p-2.5 rounded-full text-lavenderLight hover:text-white flex items-center justify-center w-10 h-10" 
+           title="Visit Instagram Profile">
+          <i class="fa-brands fa-instagram text-base"></i>
+        </a>
+        <a href="https://www.facebook.com/kimberlyangelx" target="_blank" rel="noopener" 
+           class="glass-btn p-2.5 rounded-full text-lavenderLight hover:text-white flex items-center justify-center w-10 h-10"
+           title="Visit Facebook Page">
+          <i class="fa-brands fa-facebook-f text-base"></i>
+        </a>
+      </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="text-center my-10 relative max-w-3xl mx-auto">
+      <div class="inline-block text-accentViolet text-xs tracking-widest uppercase mb-3 px-4 py-1.5 rounded-full glass-panel">
+        <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> @kimberlyangelx portfolio
+      </div>
+      
+      <h2 class="font-serif text-3xl sm:text-5xl lg:text-6xl text-purple-50 font-normal leading-tight mb-4">
+        Finding the <i class="italic text-accentViolet font-light">magic</i> in everyday things.
+      </h2>
+
+      <p class="text-base sm:text-lg text-lavenderMuted font-light leading-relaxed max-w-xl mx-auto">
+        Ordinary moments captured through enchanted light, fine-art shadows, and quiet, timeless elegance.
+      </p>
+
+      <!-- Category Filter Tabs -->
+      <div class="flex flex-wrap justify-center gap-2 mt-8" id="categoryFilter">
+        <button data-category="all" class="filter-btn active px-5 py-2 rounded-full text-xs tracking-wider uppercase font-medium glass-btn text-white bg-accentViolet/30 border-accentViolet/60">
+          All Works
+        </button>
+        <button data-category="ethereal" class="filter-btn px-5 py-2 rounded-full text-xs tracking-wider uppercase font-medium glass-btn text-lavenderMuted hover:text-white">
+          Ethereal
+        </button>
+        <button data-category="dusk" class="filter-btn px-5 py-2 rounded-full text-xs tracking-wider uppercase font-medium glass-btn text-lavenderMuted hover:text-white">
+          Dusk
+        </button>
+        <button data-category="floral" class="filter-btn px-5 py-2 rounded-full text-xs tracking-wider uppercase font-medium glass-btn text-lavenderMuted hover:text-white">
+          Floral
+        </button>
+        <button data-category="moody" class="filter-btn px-5 py-2 rounded-full text-xs tracking-wider uppercase font-medium glass-btn text-lavenderMuted hover:text-white">
+          Moody
+        </button>
+        <button data-category="whispers" class="filter-btn px-5 py-2 rounded-full text-xs tracking-wider uppercase font-medium glass-btn text-lavenderMuted hover:text-white">
+          Whispers
+        </button>
+      </div>
+    </section>
+
+    <!-- GALLERY STATUS BAR -->
+    <div class="flex justify-between items-center mb-6 text-xs text-lavenderMuted px-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="feedStatusText">Synced with @kimberlyangelx aesthetic gallery</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="resetPhotosBtn" class="hover:text-accentViolet flex items-center gap-1 transition-colors">
+          <i class="fa-solid fa-rotate-left text-xs"></i> Reset Defaults
+        </button>
+      </div>
+    </div>
+
+    <!-- GALLERY GRID CONTAINER -->
+    <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16" id="galleryGrid">
+      <!-- Dynamically Rendered Cards -->
+    </main>
+
+    <!-- INSTAGRAM SOCIAL FOOTER CARD -->
+    <div class="glass-panel rounded-3xl p-8 sm:p-10 text-center max-w-4xl mx-auto my-12 relative overflow-hidden glow-box">
+      <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-accentViolet/10 rounded-full blur-2xl pointer-events-none"></div>
+      
+      <i class="fa-brands fa-instagram text-4xl text-accentViolet mb-4 inline-block"></i>
+      <h3 class="font-serif text-2xl sm:text-3xl text-white font-normal mb-2">Explore the Full Gallery on Instagram</h3>
+      <p class="text-sm text-lavenderMuted max-w-md mx-auto mb-6">
+        Follow <strong>@kimberlyangelx</strong> for daily stories, behind-the-scenes photography, and quiet wonders.
+      </p>
+
+      <div class="flex justify-center items-center gap-4 flex-wrap">
+        <a href="https://www.instagram.com/kimberlyangelx" target="_blank" rel="noopener" 
+           class="px-6 py-3 rounded-full text-xs tracking-widest uppercase font-semibold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-purple-900/40">
+          <i class="fa-brands fa-instagram mr-2"></i> Follow @kimberlyangelx
+        </a>
+        <a href="https://www.facebook.com/kimberlyangelx" target="_blank" rel="noopener" 
+           class="glass-btn px-6 py-3 rounded-full text-xs tracking-widest uppercase font-semibold text-lavenderLight hover:text-white">
+          <i class="fa-brands fa-facebook mr-2"></i> Facebook Page
+        </a>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="py-8 border-t border-purple-900/20 text-center sm:flex sm:justify-between sm:items-center text-xs text-lavenderMuted">
+      <p>© 2026 Kimberly Angel · All Magic Reserved</p>
+      <div class="mt-4 sm:mt-0 flex justify-center gap-6">
+        <a href="https://www.instagram.com/kimberlyangelx" target="_blank" class="hover:text-accentViolet transition-colors">Instagram</a>
+        <a href="https://www.facebook.com/kimberlyangelx" target="_blank" class="hover:text-accentViolet transition-colors">Facebook</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- LIGHTBOX MODAL WITH NAVIGATION -->
+  <div id="lightboxModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-md transition-all duration-300">
+    <button id="closeLightbox" class="absolute top-5 right-5 text-lavenderMuted hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full glass-btn z-50">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <!-- Prev/Next Controls -->
+    <button id="prevLightbox" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-xl w-12 h-12 rounded-full glass-btn hidden sm:flex items-center justify-center z-50 hover:scale-110 transition-transform">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <button id="nextLightbox" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-xl w-12 h-12 rounded-full glass-btn hidden sm:flex items-center justify-center z-50 hover:scale-110 transition-transform">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+    <div class="max-w-5xl w-full max-h-[90vh] glass-panel rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-2xl border border-purple-500/20">
+      <!-- Modal Image View -->
+      <div class="md:w-3/5 bg-black/60 flex items-center justify-center relative min-h-[300px] md:min-h-[500px]">
+        <img id="lightboxImg" src="" alt="" class="max-h-[80vh] w-auto max-w-full object-contain p-2">
+      </div>
+
+      <!-- Modal Info Details -->
+      <div class="md:w-2/5 p-6 flex flex-col justify-between bg-cardBg">
+        <div>
+          <div class="flex items-center justify-between text-xs text-lavenderMuted mb-3">
+            <span id="lightboxCategory" class="uppercase tracking-widest text-accentViolet font-semibold">Category</span>
+            <span id="lightboxDate"><i class="fa-regular fa-clock mr-1"></i> Recent</span>
+          </div>
+
+          <h3 id="lightboxTitle" class="font-serif text-2xl text-white font-normal mb-3">Title</h3>
+          <p id="lightboxCaption" class="text-sm text-lavenderMuted leading-relaxed mb-6 font-light">Caption description...</p>
+
+          <div class="flex items-center gap-6 py-3 border-y border-purple-900/40 text-xs text-lavenderMuted">
+            <button id="lightboxLikeBtn" class="hover:text-red-400 transition-colors flex items-center gap-1.5">
+              <i class="fa-solid fa-heart text-red-400"></i> <strong id="lightboxLikes" class="text-white">0</strong> likes
+            </button>
+            <span><i class="fa-solid fa-comment text-indigo-400 mr-1.5"></i> <strong id="lightboxComments" class="text-white">0</strong> comments</span>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-purple-900/30 flex flex-col gap-3">
+          <a id="lightboxIgLink" href="https://www.instagram.com/kimberlyangelx" target="_blank" rel="noopener" 
+             class="w-full py-3 rounded-xl text-xs font-semibold text-center tracking-wider uppercase bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:opacity-95 transition-opacity">
+            <i class="fa-brands fa-instagram mr-2"></i> View @kimberlyangelx Post
+          </a>
+          
+          <button id="copyShareLink" class="w-full py-2.5 rounded-xl text-xs font-medium text-center glass-btn text-lavenderLight hover:text-white">
+            <i class="fa-solid fa-share-nodes mr-2"></i> Copy Image Link
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSTAGRAM LIVE SYNC / PHOTO EDIT MODAL -->
+  <div id="syncModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div class="max-w-lg w-full glass-panel rounded-2xl p-6 relative border border-purple-500/30 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <button id="closeSyncModal" class="absolute top-4 right-4 text-lavenderMuted hover:text-white w-8 h-8 flex items-center justify-center rounded-full glass-btn">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+
+      <div class="text-center mb-5">
+        <div class="w-12 h-12 rounded-full bg-accentViolet/20 text-accentViolet flex items-center justify-center mx-auto mb-3 text-xl">
+          <i class="fa-brands fa-instagram"></i>
+        </div>
+        <h3 class="font-serif text-xl text-white">Sync Instagram Photo Manager</h3>
+        <p class="text-xs text-lavenderMuted mt-1">
+          Direct external hotlinking from Instagram CDN expires over time. Use this panel to upload local images or update URLs from @kimberlyangelx with persistent storage!
+        </p>
+      </div>
+
+      <!-- Notice Alert -->
+      <div class="p-3 mb-4 rounded-xl bg-purple-950/60 border border-purple-800/40 text-xs text-purple-200">
+        <i class="fa-solid fa-circle-info text-accentViolet mr-1.5"></i>
+        <strong>Tip:</strong> Uploading local photos converts images to persistent local Data URLs automatically.
+      </div>
+
+      <div class="space-y-4">
+        <div class="p-4 rounded-xl bg-purple-950/40 border border-purple-800/30">
+          <h4 class="text-xs uppercase font-semibold tracking-wider text-accentViolet mb-2">
+            <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Add / Upload New Photo
+          </h4>
+          
+          <div class="space-y-2.5">
+            <div>
+              <label class="text-[11px] text-lavenderMuted block mb-1">Local Image File Upload</label>
+              <input type="file" id="localFileInput" accept="image/*" 
+                     class="w-full text-xs text-lavenderMuted file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-accentViolet/20 file:text-accentViolet hover:file:bg-accentViolet/30 cursor-pointer">
+            </div>
+
+            <div>
+              <label class="text-[11px] text-lavenderMuted block mb-1">Or Image URL</label>
+              <input type="text" id="customImgUrl" placeholder="https://..." 
+                     class="w-full px-3 py-2 rounded-lg text-xs bg-black/50 border border-purple-800/50 text-white focus:outline-none focus:border-accentViolet">
+            </div>
+
+            <div>
+              <label class="text-[11px] text-lavenderMuted block mb-1">Title</label>
+              <input type="text" id="customImgTitle" placeholder="e.g. Whispering Shadows" 
+                     class="w-full px-3 py-2 rounded-lg text-xs bg-black/50 border border-purple-800/50 text-white focus:outline-none focus:border-accentViolet">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[11px] text-lavenderMuted block mb-1">Category</label>
+                <select id="customImgCategory" class="w-full px-3 py-2 rounded-lg text-xs bg-black/50 border border-purple-800/50 text-lavenderLight focus:outline-none focus:border-accentViolet">
+                  <option value="ethereal">Ethereal</option>
+                  <option value="dusk">Dusk</option>
+                  <option value="floral">Floral</option>
+                  <option value="moody">Moody</option>
+                  <option value="whispers">Whispers</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[11px] text-lavenderMuted block mb-1">Likes Count</label>
+                <input type="number" id="customImgLikes" placeholder="350" 
+                       class="w-full px-3 py-2 rounded-lg text-xs bg-black/50 border border-purple-800/50 text-white focus:outline-none focus:border-accentViolet">
+              </div>
+            </div>
+
+            <div>
+              <label class="text-[11px] text-lavenderMuted block mb-1">Caption</label>
+              <textarea id="customImgCaption" rows="2" placeholder="Write a short poetic caption..." 
+                        class="w-full px-3 py-2 rounded-lg text-xs bg-black/50 border border-purple-800/50 text-white focus:outline-none focus:border-accentViolet"></textarea>
+            </div>
+
+            <button id="addCustomPhotoBtn" class="w-full py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-accentViolet text-brandDark hover:bg-white transition-colors mt-1">
+              Save Photo to Portfolio
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    // Curated high-res fallback collection matching Kimberly Angel (@kimberlyangelx) dark ethereal aesthetic
+    const DEFAULT_PHOTOS = [
+      {
+        id: '1',
+        title: 'whispering dusk',
+        category: 'dusk',
+        image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1000&q=80',
+        caption: 'Quiet twilight hues catching soft light across ordinary landscapes.',
+        likes: 342,
+        comments: 28,
+        date: '2 days ago',
+        igUrl: 'https://www.instagram.com/kimberlyangelx'
+      },
+      {
+        id: '2',
+        title: 'feather & light',
+        category: 'ethereal',
+        image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1000&q=80',
+        caption: 'Soft sun rays breaking through delicate textures. Magic in simplicity.',
+        likes: 512,
+        comments: 45,
+        date: '4 days ago',
+        igUrl: 'https://www.instagram.com/kimberlyangelx'
+      },
+      {
+        id: '3',
+        title: 'the hidden key',
+        category: 'moody',
+        image: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=1000&q=80',
+        caption: 'Finding unexpected geometry and ethereal radiance in dark spaces.',
+        likes: 289,
+        comments: 19,
+        date: '1 week ago',
+        igUrl: 'https://www.instagram.com/kimberlyangelx'
+      },
+      {
+        id: '4',
+        title: 'quiet observer',
+        category: 'whispers',
+        image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1000&q=80',
+        caption: 'Mist rolling over serene violet mountains at early dawn.',
+        likes: 620,
+        comments: 54,
+        date: '1 week ago',
+        igUrl: 'https://www.instagram.com/kimberlyangelx'
+      },
+      {
+        id: '5',
+        title: 'stillness in time',
+        category: 'ethereal',
+        image: 'https://images.unsplash.com/photo-144703686981-a3abbc4d4fe3?w=1000&q=80',
+        caption: 'Frozen moments suspended between moonlight and memory.',
+        likes: 418,
+        comments: 31,
+        date: '2 weeks ago',
+        igUrl: 'https://www.instagram.com/kimberlyangelx'
+      },
+      {
+        id: '6',
+        title: 'everyday bloom',
+        category: 'floral',
+        image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000&q=80',
+        caption: 'Delicate coastal petals catching dark twilight warmth.',
+        likes: 730,
+        comments: 62,
+        date: '2 weeks ago',
+        igUrl: 'https://www.instagram.com/kimberlyangelx'
+      },
+      {
+        id: '7',
+        title: 'cosmic thread',
+        category: 'dusk',
+        image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1000&q=80',
+        caption: 'Starlit horizons weaving stories through night skies.',
+        likes: 845,
+        comments: 73,
+        date: '3 weeks ago',
+        igUrl: 'https://www.instagram.com/kimberlyangelx'
+      },
+      {
+        id: '8',
+        title: 'glass & glow',
+        category: 'moody',
+        image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1000&q=80',
+        caption: 'Atmospheric reflections captured with subtle purple tones.',
+        likes: 395,
+        comments: 26,
+        date: '1 month ago',
+        igUrl: 'https://www.instagram.com/kimberlyangelx'
+      }
+    ];
+
+    // LocalStorage helper
+    function loadPhotos() {
+      const saved = localStorage.getItem('kimberly_angel_photos');
+      if (saved) {
+        try { return JSON.parse(saved); } catch(e) {}
+      }
+      return [...DEFAULT_PHOTOS];
+    }
+
+    function savePhotos(data) {
+      localStorage.setItem('kimberly_angel_photos', JSON.stringify(data));
+    }
+
+    let photosStore = loadPhotos();
+    let currentCategory = 'all';
+    let currentLightboxIndex = 0;
+
+    // DOM Elements
+    const galleryGrid = document.getElementById('galleryGrid');
+    const lightboxModal = document.getElementById('lightboxModal');
+    const syncModal = document.getElementById('syncModal');
+    const feedStatusText = document.getElementById('feedStatusText');
+
+    // Render Gallery Cards
+    function renderGallery(photosToDisplay) {
+      galleryGrid.innerHTML = '';
+
+      if (photosToDisplay.length === 0) {
+        galleryGrid.innerHTML = `
+          <div class="col-span-full py-16 text-center text-lavenderMuted">
+            <i class="fa-regular fa-image text-3xl mb-3 block"></i>
+            <p>No photos found in this category.</p>
+          </div>
+        `;
+        return;
+      }
+
+      photosToDisplay.forEach((photo) => {
+        const indexInStore = photosStore.findIndex(p => p.id === photo.id);
+        const card = document.createElement('div');
+        card.className = 'glass-panel rounded-2xl overflow-hidden glow-box group flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-2 cursor-pointer';
+        card.onclick = () => openLightbox(indexInStore);
+
+        card.innerHTML = `
+          <div class="relative aspect-[4/5] bg-purple-950/40 overflow-hidden">
+            <img src="${photo.image}" alt="${photo.title}" 
+                 class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 filter brightness-95 group-hover:brightness-105"
+                 onerror="this.src='https://placehold.co/600x750/1d1727/b69aff?text=Photo+Unavailable'">
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+              <span class="text-xs text-accentViolet font-medium uppercase tracking-wider mb-1">${photo.category}</span>
+              <p class="text-xs text-white/90 line-clamp-2">${photo.caption}</p>
+            </div>
+
+            <a href="${photo.igUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
+               class="absolute top-3 right-3 w-8 h-8 rounded-full glass-btn flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
+               title="View on Instagram">
+              <i class="fa-brands fa-instagram text-xs"></i>
+            </a>
+          </div>
+
+          <div class="p-4 flex flex-col justify-between flex-grow">
+            <div>
+              <h3 class="font-serif text-lg text-white font-normal group-hover:text-accentViolet transition-colors capitalize">
+                ${photo.title}
+              </h3>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-lavenderMuted mt-3 pt-3 border-t border-purple-900/30">
+              <button onclick="event.stopPropagation(); toggleLike('${photo.id}')" class="flex items-center gap-1 hover:text-red-400 transition-colors">
+                <i class="fa-solid fa-heart ${photo.userLiked ? 'text-red-500' : 'text-accentViolet'}"></i> ${photo.likes}
+              </button>
+              <span class="uppercase tracking-widest text-[10px] text-purple-300/60">${photo.date}</span>
+            </div>
+          </div>
+        `;
+
+        galleryGrid.appendChild(card);
+      });
+    }
+
+    // Toggle Like Counter
+    function toggleLike(id) {
+      const p = photosStore.find(item => item.id === id);
+      if (p) {
+        if (p.userLiked) {
+          p.likes--;
+          p.userLiked = false;
+        } else {
+          p.likes++;
+          p.userLiked = true;
+        }
+        savePhotos(photosStore);
+        filterCategory(currentCategory);
+        if (!lightboxModal.classList.contains('hidden')) {
+          document.getElementById('lightboxLikes').innerText = p.likes;
+        }
+      }
+    }
+
+    // Filter Logic
+    function filterCategory(cat) {
+      currentCategory = cat;
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => {
+        if (btn.dataset.category === cat) {
+          btn.classList.add('bg-accentViolet/30', 'border-accentViolet/60', 'text-white');
+          btn.classList.remove('text-lavenderMuted');
+        } else {
+          btn.classList.remove('bg-accentViolet/30', 'border-accentViolet/60', 'text-white');
+          btn.classList.add('text-lavenderMuted');
+        }
+      });
+
+      const filtered = cat === 'all' ? photosStore : photosStore.filter(p => p.category === cat);
+      renderGallery(filtered);
+    }
+
+    document.getElementById('categoryFilter').addEventListener('click', (e) => {
+      const btn = e.target.closest('.filter-btn');
+      if (btn) filterCategory(btn.dataset.category);
+    });
+
+    // Lightbox Controls
+    function openLightbox(index) {
+      currentLightboxIndex = index;
+      const photo = photosStore[index];
+      if (!photo) return;
+
+      document.getElementById('lightboxImg').src = photo.image;
+      document.getElementById('lightboxTitle').innerText = photo.title;
+      document.getElementById('lightboxCategory').innerText = photo.category;
+      document.getElementById('lightboxCaption').innerText = photo.caption;
+      document.getElementById('lightboxLikes').innerText = photo.likes;
+      document.getElementById('lightboxComments').innerText = photo.comments;
+      document.getElementById('lightboxDate').innerText = photo.date;
+      document.getElementById('lightboxIgLink').href = photo.igUrl || 'https://www.instagram.com/kimberlyangelx';
+
+      lightboxModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightboxModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('closeLightbox').addEventListener('click', closeLightbox);
+    lightboxModal.addEventListener('click', (e) => {
+      if (e.target === lightboxModal) closeLightbox();
+    });
+
+    document.getElementById('prevLightbox').addEventListener('click', () => {
+      currentLightboxIndex = (currentLightboxIndex - 1 + photosStore.length) % photosStore.length;
+      openLightbox(currentLightboxIndex);
+    });
+
+    document.getElementById('nextLightbox').addEventListener('click', () => {
+      currentLightboxIndex = (currentLightboxIndex + 1) % photosStore.length;
+      openLightbox(currentLightboxIndex);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lightboxModal.classList.contains('hidden')) {
+        if (e.key === 'ArrowLeft') document.getElementById('prevLightbox').click();
+        if (e.key === 'ArrowRight') document.getElementById('nextLightbox').click();
+        if (e.key === 'Escape') closeLightbox();
+      }
+    });
+
+    // Copy Link Helper
+    document.getElementById('copyShareLink').addEventListener('click', () => {
+      const src = document.getElementById('lightboxImg').src;
+      const dummy = document.createElement('input');
+      document.body.appendChild(dummy);
+      dummy.value = src;
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+
+      const btn = document.getElementById('copyShareLink');
+      btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-2"></i> Copied!`;
+      setTimeout(() => {
+        btn.innerHTML = `<i class="fa-solid fa-share-nodes mr-2"></i> Copy Image Link`;
+      }, 2000);
+    });
+
+    // Reset Defaults
+    document.getElementById('resetPhotosBtn').addEventListener('click', () => {
+      photosStore = [...DEFAULT_PHOTOS];
+      savePhotos(photosStore);
+      filterCategory('all');
+      feedStatusText.innerText = 'Reset to default @kimberlyangelx collection';
+    });
+
+    // Sync Modal Controls
+    const openSyncModalBtn = document.getElementById('openSyncModalBtn');
+    const closeSyncModalBtn = document.getElementById('closeSyncModal');
+
+    openSyncModalBtn.addEventListener('click', () => syncModal.classList.remove('hidden'));
+    closeSyncModalBtn.addEventListener('click', () => syncModal.classList.add('hidden'));
+    syncModal.addEventListener('click', (e) => {
+      if (e.target === syncModal) syncModal.classList.add('hidden');
+    });
+
+    // File Upload Handler (Converts File to Data URL)
+    let uploadedDataUrl = '';
+    document.getElementById('localFileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          uploadedDataUrl = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Add Custom Photo to Store
+    document.getElementById('addCustomPhotoBtn').addEventListener('click', () => {
+      const urlInput = document.getElementById('customImgUrl').value.trim();
+      const finalUrl = uploadedDataUrl || urlInput;
+      const title = document.getElementById('customImgTitle').value.trim() || 'Untitled Wonder';
+      const category = document.getElementById('customImgCategory').value;
+      const likes = parseInt(document.getElementById('customImgLikes').value) || 350;
+      const caption = document.getElementById('customImgCaption').value.trim() || 'Captured with quiet light and modern magic.';
+
+      if (!finalUrl) {
+        alert('Please choose a local image file or enter an image URL.');
+        return;
+      }
+
+      const newPhoto = {
+        id: Date.now().toString(),
+        title: title.toLowerCase(),
+        category: category,
+        image: finalUrl,
+        caption: caption,
+        likes: likes,
+        comments: 14,
+        date: 'Just now',
+        igUrl: 'https://www.instagram.com/kimberlyangelx'
+      };
+
+      photosStore.unshift(newPhoto);
+      savePhotos(photosStore);
+      filterCategory(currentCategory);
+
+      // Reset form
+      document.getElementById('customImgUrl').value = '';
+      document.getElementById('customImgTitle').value = '';
+      document.getElementById('customImgCaption').value = '';
+      document.getElementById('localFileInput').value = '';
+      uploadedDataUrl = '';
+
+      syncModal.classList.add('hidden');
+      feedStatusText.innerText = 'New photo added to portfolio!';
+    });
+
+    // Particle Background
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3 - 0.1;
+        this.opacity = Math.random() * 0.5 + 0.1;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+      }
+      draw() {
+        ctx.fillStyle = `rgba(182, 154, 255, ${this.opacity})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 45; i++) particles.push(new Particle());
+
+    // Clean, ambient sparkle sprite class
+    class Sparkle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 8 + 4; // Sparkle arm length
+        this.maxOpacity = Math.random() * 0.45 + 0.15;
+        this.opacity = 0;
+        this.fadeIn = true;
+        this.fadeSpeed = Math.random() * 0.008 + 0.003;
+        this.rotation = Math.random() * Math.PI;
+        this.color = Math.random() > 0.3 ? 'rgba(212, 191, 255,' : 'rgba(245, 239, 255,';
+      }
+      update() {
+        if (this.fadeIn) {
+          this.opacity += this.fadeSpeed;
+          if (this.opacity >= this.maxOpacity) {
+            this.fadeIn = false;
+          }
+        } else {
+          this.opacity -= this.fadeSpeed;
+          if (this.opacity <= 0) {
+            this.reset();
+          }
+        }
+      }
+      draw() {
+        if (this.opacity <= 0) return;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+
+        // Subtle glow center
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size * 0.8);
+        grad.addColorStop(0, `${this.color} ${this.opacity})`);
+        grad.addColorStop(1, `${this.color} 0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.size * 0.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 4-point subtle star sprite
+        ctx.strokeStyle = `${this.color} ${this.opacity * 0.9})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        // Horizontal arm
+        ctx.moveTo(-this.size, 0);
+        ctx.lineTo(this.size, 0);
+        // Vertical arm
+        ctx.moveTo(0, -this.size);
+        ctx.lineTo(0, this.size);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+    }
+
+    let sparkles = [];
+    for (let i = 0; i < 24; i++) sparkles.push(new Sparkle());
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      sparkles.forEach(s => { s.update(); s.draw(); });
+      requestAnimationFrame(animateParticles);
+    }
+
+    window.onload = function() {
+      renderGallery(photosStore);
+      animateParticles();
+    };
+  </script>
+</body>
+</html>
